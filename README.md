@@ -48,3 +48,12 @@ python .\scripts\run_experiments.py --out results\nqueens.csv --ns 11 12 13 --wo
 ```
 
 Metrics recorded include total time, speedup over the sequential solver, task throughput, successful steals, failed steal attempts, worker idle time, load imbalance, ABP overflow count, and Chase-Lev resize count.
+
+For the larger report/plot pipeline:
+
+```powershell
+python .\scripts\run_heavy_suite.py --out-dir experiments\heavy_20260428_final --repeats 3 --baseline-repeats 3 --max-workers 16
+python .\scripts\analyze_results.py experiments\heavy_20260428_final\raw_results.csv --out-dir experiments\heavy_20260428_final
+```
+
+The heavy suite writes raw CSVs, grouped summaries, an analysis report, and PNG plots under the selected experiment directory.

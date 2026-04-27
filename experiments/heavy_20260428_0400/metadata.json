@@ -1,0 +1,11 @@
+{
+  "created_at": "20260428_040431",
+  "exe": "C:\\Users\\aniru\\OneDrive\\Desktop\\PCP\\Project\\build\\ws_bench.exe",
+  "repeats": 3,
+  "baseline_repeats": 3,
+  "max_workers": 16,
+  "abp_capacity": 4096,
+  "chase_log_capacity": 4,
+  "quick": false,
+  "case_count": 285
+}
