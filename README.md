@@ -8,6 +8,16 @@ This project implements the three schedulers from the presentation and runs them
 
 The chapter material matches the presentation: the bounded work-stealing deque corresponds to the ABP family, and the unbounded/dynamic circular deque corresponds to Chase-Lev.
 
+## Layout
+
+- `include/ws/*.hpp`: public interfaces, task/metric structs, and small template helpers.
+- `src/*_deque.cpp`: scheduler data-structure implementations.
+- `src/executor.cpp`: shared worker runtime and task execution loop.
+- `src/nqueens.cpp`: N-Queens benchmark.
+- `src/ws_bench.cpp`: command-line benchmark executable.
+- `tests/ws_tests.cpp`: correctness and scheduler behavior tests.
+- `scripts/`: experiment runners and plotting/analysis tools.
+
 ## Build
 
 ```powershell
@@ -18,7 +28,9 @@ If `make` is not available, the benchmark can be built directly:
 
 ```powershell
 mkdir build
-g++ -std=c++17 -O3 -Wall -Wextra -pedantic -pthread -Iinclude src/ws_bench.cpp -o build/ws_bench.exe
+g++ -std=c++17 -O3 -Wall -Wextra -pedantic -pthread -Iinclude `
+  src/ws_bench.cpp src/global_queue.cpp src/abp_deque.cpp src/chase_lev_deque.cpp `
+  src/backend_factory.cpp src/executor.cpp src/nqueens.cpp -o build/ws_bench.exe
 ```
 
 ## Run
@@ -52,8 +64,8 @@ Metrics recorded include total time, speedup over the sequential solver, task th
 For the larger report/plot pipeline:
 
 ```powershell
-python .\scripts\run_heavy_suite.py --out-dir experiments\heavy_20260428_final --repeats 3 --baseline-repeats 3 --max-workers 16
-python .\scripts\analyze_results.py experiments\heavy_20260428_final\raw_results.csv --out-dir experiments\heavy_20260428_final
+python .\scripts\run_heavy_suite.py --out-dir experiments\heavy_run --repeats 3 --baseline-repeats 3 --max-workers 16
+python .\scripts\analyze_results.py experiments\heavy_run\raw_results.csv --out-dir experiments\heavy_run
 ```
 
 The heavy suite writes raw CSVs, grouped summaries, an analysis report, and PNG plots under the selected experiment directory.
