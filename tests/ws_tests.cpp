@@ -17,9 +17,7 @@ void require(bool condition, const std::string& message) {
     }
 }
 
-ws::RunMetrics run_case(const std::string& scheduler,
-                        int n,
-                        int split_depth,
+ws::RunMetrics run_case(const std::string& scheduler, int n, int split_depth,
                         std::size_t workers,
                         std::size_t abp_capacity = 64,
                         std::size_t chase_log_capacity = 2) {

@@ -11,9 +11,8 @@
 namespace ws {
 
 std::string normalize_scheduler_name(std::string name) {
-    std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) {
-        return static_cast<char>(std::tolower(c));
-    });
+    std::transform(name.begin(), name.end(), name.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     name.erase(std::remove(name.begin(), name.end(), '-'), name.end());
     name.erase(std::remove(name.begin(), name.end(), '_'), name.end());
     return name;
@@ -26,8 +25,7 @@ std::unique_ptr<ITaskBackend> make_backend(const std::string& scheduler,
         return std::make_unique<GlobalQueueBackend>(options.workers);
     }
     if (normalized == "abp" || normalized == "bounded") {
-        return std::make_unique<AbpBackend>(options.workers,
-                                            options.abp_capacity,
+        return std::make_unique<AbpBackend>(options.workers, options.abp_capacity,
                                             options.steal_attempts_per_poll);
     }
     if (normalized == "chaselev" || normalized == "unbounded") {

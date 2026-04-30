@@ -21,8 +21,7 @@ void TaskContext::spawn(Task task) {
 }
 
 Executor::Executor(std::unique_ptr<ITaskBackend> backend, std::uint64_t seed)
-    : backend_(std::move(backend)),
-      seed_(seed) {
+    : backend_(std::move(backend)), seed_(seed) {
     if (!backend_) {
         throw std::invalid_argument("backend must not be null");
     }
@@ -44,9 +43,7 @@ RunMetrics Executor::run(Task initial_task, const RunDescriptor& descriptor) {
     std::vector<std::thread> threads;
     threads.reserve(stats_.size());
     for (std::size_t id = 0; id < stats_.size(); ++id) {
-        threads.emplace_back([this, id] {
-            worker_loop(id);
-        });
+        threads.emplace_back([this, id] { worker_loop(id); });
     }
     for (auto& thread : threads) {
         thread.join();
@@ -66,9 +63,10 @@ RunMetrics Executor::run(Task initial_task, const RunDescriptor& descriptor) {
     metrics.speedup = metrics.sequential_seconds > 0.0
                           ? metrics.sequential_seconds / metrics.elapsed_seconds
                           : 0.0;
-    metrics.tasks_per_second = metrics.elapsed_seconds > 0.0
-                                   ? static_cast<double>(metrics.tasks_completed) / metrics.elapsed_seconds
-                                   : 0.0;
+    metrics.tasks_per_second =
+        metrics.elapsed_seconds > 0.0
+            ? static_cast<double>(metrics.tasks_completed) / metrics.elapsed_seconds
+            : 0.0;
     return metrics;
 }
 
@@ -206,8 +204,7 @@ RunMetrics Executor::collect_metrics() const {
         metrics.mean_tasks_per_worker = sum / static_cast<double>(stats_.size());
         const double mean_square = sum_squares / static_cast<double>(stats_.size());
         const double variance = std::max(
-            0.0,
-            mean_square - metrics.mean_tasks_per_worker * metrics.mean_tasks_per_worker);
+            0.0, mean_square - metrics.mean_tasks_per_worker * metrics.mean_tasks_per_worker);
         metrics.stddev_tasks_per_worker = std::sqrt(variance);
     }
 

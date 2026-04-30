@@ -6,26 +6,22 @@ namespace ws {
 
 CircularArray::CircularArray(std::size_t log_capacity)
     : log_capacity_(log_capacity < 1 ? 1 : log_capacity),
-      capacity_(std::size_t{1} << log_capacity_),
-      slots_(capacity_) {}
+      capacity_(std::size_t{1} << log_capacity_), slots_(capacity_) {}
 
 std::size_t CircularArray::capacity() const {
     return capacity_;
 }
 
 Task CircularArray::get(std::int64_t logical_index) const {
-    return std::atomic_load_explicit(&slots_[index_for(logical_index)],
-                                     std::memory_order_acquire);
+    return std::atomic_load_explicit(&slots_[index_for(logical_index)], std::memory_order_acquire);
 }
 
 void CircularArray::put(std::int64_t logical_index, Task task) {
-    std::atomic_store_explicit(&slots_[index_for(logical_index)],
-                               std::move(task),
+    std::atomic_store_explicit(&slots_[index_for(logical_index)], std::move(task),
                                std::memory_order_release);
 }
 
-std::shared_ptr<CircularArray> CircularArray::grow(std::int64_t top,
-                                                   std::int64_t bottom) const {
+std::shared_ptr<CircularArray> CircularArray::grow(std::int64_t top, std::int64_t bottom) const {
     // Logical indexes are unchanged across resize, so thieves can keep using
     // top while the owner publishes a larger circular array.
     auto larger = std::make_shared<CircularArray>(log_capacity_ + 1);
@@ -83,8 +79,7 @@ Task ChaseLevDeque::pop_bottom() {
     }
 
     auto expected_top = top;
-    if (top_.compare_exchange_strong(expected_top, top + 1,
-                                     std::memory_order_seq_cst,
+    if (top_.compare_exchange_strong(expected_top, top + 1, std::memory_order_seq_cst,
                                      std::memory_order_relaxed)) {
         bottom_.store(top + 1, std::memory_order_relaxed);
         return task;
@@ -106,8 +101,7 @@ StealResult ChaseLevDeque::pop_top() {
 
     Task task = array->get(top);
     auto expected_top = top;
-    if (top_.compare_exchange_strong(expected_top, top + 1,
-                                     std::memory_order_seq_cst,
+    if (top_.compare_exchange_strong(expected_top, top + 1, std::memory_order_seq_cst,
                                      std::memory_order_relaxed)) {
         return {StealStatus::success, task};
     }
@@ -118,8 +112,7 @@ std::uint64_t ChaseLevDeque::resize_count() const {
     return resizes_.load(std::memory_order_relaxed);
 }
 
-ChaseLevBackend::ChaseLevBackend(std::size_t workers,
-                                 std::size_t initial_log_capacity,
+ChaseLevBackend::ChaseLevBackend(std::size_t workers, std::size_t initial_log_capacity,
                                  std::size_t steal_attempts_per_poll)
     : workers_(workers == 0 ? 1 : workers),
       steal_attempts_per_poll_(steal_attempts_per_poll == 0 ? workers_ : steal_attempts_per_poll) {

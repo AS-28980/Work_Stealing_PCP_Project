@@ -17,7 +17,6 @@ struct BackendOptions {
 
 std::string normalize_scheduler_name(std::string name);
 
-std::unique_ptr<ITaskBackend> make_backend(const std::string& scheduler,
-                                           const BackendOptions& options);
+std::unique_ptr<ITaskBackend> make_backend(const std::string& scheduler, const BackendOptions& options);
 
 }  // namespace ws

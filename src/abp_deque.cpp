@@ -5,10 +5,7 @@
 namespace ws {
 
 AbpDeque::AbpDeque(std::size_t capacity)
-    : capacity_(capacity < 2 ? 2 : capacity),
-      slots_(capacity_),
-      top_(0),
-      bottom_(0) {}
+    : capacity_(capacity < 2 ? 2 : capacity), slots_(capacity_), top_(0), bottom_(0) {}
 
 bool AbpDeque::push_bottom(Task task) {
     // Fixed capacity is the ABP trade-off: overflow is reported to the
@@ -45,8 +42,7 @@ Task AbpDeque::pop_bottom() {
     }
 
     auto expected_top = top;
-    if (top_.compare_exchange_strong(expected_top, top + 1,
-                                     std::memory_order_seq_cst,
+    if (top_.compare_exchange_strong(expected_top, top + 1, std::memory_order_seq_cst,
                                      std::memory_order_relaxed)) {
         bottom_.store(top + 1, std::memory_order_relaxed);
         return task;
@@ -68,8 +64,7 @@ StealResult AbpDeque::pop_top() {
 
     Task task = get(top);
     auto expected_top = top;
-    if (top_.compare_exchange_strong(expected_top, top + 1,
-                                     std::memory_order_seq_cst,
+    if (top_.compare_exchange_strong(expected_top, top + 1, std::memory_order_seq_cst,
                                      std::memory_order_relaxed)) {
         return {StealStatus::success, task};
     }
@@ -81,18 +76,15 @@ std::size_t AbpDeque::index_for(std::int64_t logical_index) const {
 }
 
 Task AbpDeque::get(std::int64_t logical_index) {
-    return std::atomic_load_explicit(&slots_[index_for(logical_index)],
-                                     std::memory_order_acquire);
+    return std::atomic_load_explicit(&slots_[index_for(logical_index)], std::memory_order_acquire);
 }
 
 void AbpDeque::put(std::int64_t logical_index, Task task) {
-    std::atomic_store_explicit(&slots_[index_for(logical_index)],
-                               std::move(task),
+    std::atomic_store_explicit(&slots_[index_for(logical_index)], std::move(task),
                                std::memory_order_release);
 }
 
-AbpBackend::AbpBackend(std::size_t workers,
-                       std::size_t capacity,
+AbpBackend::AbpBackend(std::size_t workers, std::size_t capacity,
                        std::size_t steal_attempts_per_poll)
     : workers_(workers == 0 ? 1 : workers),
       steal_attempts_per_poll_(steal_attempts_per_poll == 0 ? workers_ : steal_attempts_per_poll),

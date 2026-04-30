@@ -35,26 +35,10 @@ std::uint64_t NQueensBenchmark::solve_sequential(int n) {
 
 std::optional<std::uint64_t> NQueensBenchmark::known_solution_count(int n) {
     static const std::vector<std::uint64_t> counts = {
-        1ULL,        // 0, unused by the CLI
-        1ULL,
-        0ULL,
-        0ULL,
-        2ULL,
-        10ULL,
-        4ULL,
-        40ULL,
-        92ULL,
-        352ULL,
-        724ULL,
-        2680ULL,
-        14200ULL,
-        73712ULL,
-        365596ULL,
-        2279184ULL,
-        14772512ULL,
-        95815104ULL,
-        666090624ULL
-    };
+        1ULL,  // 0, unused by the CLI
+        1ULL, 0ULL, 0ULL, 2ULL, 10ULL, 4ULL, 40ULL, 92ULL, 352ULL,
+        724ULL, 2680ULL, 14200ULL, 73712ULL, 365596ULL, 2279184ULL,
+        14772512ULL, 95815104ULL, 666090624ULL};
 
     if (n < 0 || static_cast<std::size_t>(n) >= counts.size()) {
         return std::nullopt;
@@ -62,8 +46,7 @@ std::optional<std::uint64_t> NQueensBenchmark::known_solution_count(int n) {
     return counts[static_cast<std::size_t>(n)];
 }
 
-Task NQueensBenchmark::make_node(int row,
-                                 std::uint64_t columns,
+Task NQueensBenchmark::make_node(int row, std::uint64_t columns,
                                  std::uint64_t left_diagonals,
                                  std::uint64_t right_diagonals) {
     return make_task([this, row, columns, left_diagonals, right_diagonals](TaskContext& context) {
@@ -71,9 +54,7 @@ Task NQueensBenchmark::make_node(int row,
     });
 }
 
-void NQueensBenchmark::run_node(TaskContext& context,
-                                int row,
-                                std::uint64_t columns,
+void NQueensBenchmark::run_node(TaskContext& context, int row, std::uint64_t columns,
                                 std::uint64_t left_diagonals,
                                 std::uint64_t right_diagonals) {
     if (row == n_) {
@@ -94,12 +75,8 @@ void NQueensBenchmark::run_node(TaskContext& context,
         if (row < split_depth_) {
             context.spawn(make_node(row + 1, next_columns, next_left, next_right));
         } else {
-            local_solutions += count_from(n_,
-                                          full_mask_,
-                                          row + 1,
-                                          next_columns,
-                                          next_left,
-                                          next_right);
+            local_solutions += count_from(n_, full_mask_, row + 1, next_columns,
+                                          next_left, next_right);
         }
     }
 
@@ -108,9 +85,7 @@ void NQueensBenchmark::run_node(TaskContext& context,
     }
 }
 
-std::uint64_t NQueensBenchmark::count_from(int n,
-                                           std::uint64_t full_mask,
-                                           int row,
+std::uint64_t NQueensBenchmark::count_from(int n, std::uint64_t full_mask, int row,
                                            std::uint64_t columns,
                                            std::uint64_t left_diagonals,
                                            std::uint64_t right_diagonals) {
@@ -123,10 +98,7 @@ std::uint64_t NQueensBenchmark::count_from(int n,
     while (available != 0) {
         const std::uint64_t bit = available & (~available + 1);
         available ^= bit;
-        count += count_from(n,
-                            full_mask,
-                            row + 1,
-                            columns | bit,
+        count += count_from(n, full_mask, row + 1, columns | bit,
                             (left_diagonals | bit) << 1,
                             (right_diagonals | bit) >> 1);
     }

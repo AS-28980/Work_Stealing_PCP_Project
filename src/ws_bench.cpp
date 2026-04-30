@@ -99,8 +99,7 @@ std::pair<std::uint64_t, double> run_sequential(int n) {
     return {solutions, std::chrono::duration<double>(finish - start).count()};
 }
 
-ws::RunMetrics run_scheduler(const CliOptions& options,
-                             const std::string& scheduler,
+ws::RunMetrics run_scheduler(const CliOptions& options, const std::string& scheduler,
                              double sequential_seconds) {
     ws::BackendOptions backend_options;
     backend_options.workers = options.workers;

@@ -12,11 +12,7 @@
 
 namespace ws {
 
-enum class StealStatus {
-    empty,
-    abort,
-    success
-};
+enum class StealStatus { empty, abort, success };
 
 struct StealResult {
     StealStatus status = StealStatus::empty;

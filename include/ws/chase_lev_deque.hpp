@@ -48,8 +48,7 @@ private:
 
 class ChaseLevBackend final : public ITaskBackend {
 public:
-    ChaseLevBackend(std::size_t workers,
-                    std::size_t initial_log_capacity,
+    ChaseLevBackend(std::size_t workers, std::size_t initial_log_capacity,
                     std::size_t steal_attempts_per_poll);
 
     std::string name() const override;
